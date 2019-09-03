@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*-
 
 # Módulos
-import sys, pygame
-import speech
+import sys
+import pygame
+import speech_recognition as sr
 from pygame.locals import *
 
-# Constantes
-WIDTH = 500
-HEIGHT = 400
+# Constantess
+WIDTH = 1000
+HEIGHT = 500
+
 
 # Clases
 # ---------------------------------------------------------------------
 
 class Toad(pygame.sprite.Sprite):
+
     def __init__(self, x):
         pygame.sprite.Sprite.__init__(self)
-        self.image = load_image("toad.png")
+        self.image = load_image("toad.jpg")
         self.rect = self.image.get_rect()
         self.rect.centerx = x
-        self.rect.centery = HEIGHT / 2
+        self.rect.centery = HEIGHT / 8
         self.speed = 1
 
     def mover(self, time, keys):
@@ -40,28 +43,29 @@ class Toad(pygame.sprite.Sprite):
 # ---------------------------------------------------------------------
 
 def load_image(filename, transparent=False):
-        try: image = pygame.image.load(filename)
-        except pygame.error, message : 
-            raise SystemExit, message
+        try: image = pygame.image.load("laberinto.jpg")
+        except pygame.error as message: 
+            raise 
+            SystemExit(message)
         image = image.convert()
         if transparent:
                 color = image.get_at((0,0))
                 image.set_colorkey(color, RLEACCEL)
         return image
 
-"""def response(phrase, listener):
+def response(phrase, listener):
     global time, toad_jug
-    speech.say("You said %s" % phrase)
+    sr.say("Moved to %s" % phrase) 
     if phrase == "Arriba":
-        carro_jug.rect.centery -= carro_jug.speed * time
+        toad_jug.rect.centery -= toad_jug.speed * time
     if phrase == "Abajo":
-        carro_jug.rect.centery += carro_jug.speed * time 
-    if phrase == "Acelerar Izquierda":
-        carro_jug.rect.centerx -= carro_jug.speed * time
-    if phrase == "Acelerar Derecha":
-        carro_jug.rect.centerx += carro_jug.speed * time
+        toad_jug.rect.centery += toad_jug.speed * time 
+    if phrase == "Izquierda":
+        toad_jug.rect.centerx -= toad_jug.speed * time
+    if phrase == "Derecha":
+        toad_jug.rect.centerx += toad_jug.speed * time
     if phrase == "Salir":
-        sys.exit() """
+        sys.exit() 
 
 # ---------------------------------------------------------------------
 toad_jug = None
@@ -72,10 +76,10 @@ def main():
     pygame.display.set_caption("Jueguito")
 
     background_image = load_image('laberinto.jpg')
-    carro_jug = Toad(30)
+    toad_jug = Toad(30)
     clock = pygame.time.Clock()
 
-    listener = speech.listenfor(['Acelerar Derecha', 'Acelerar Izquierda', 'Arriba', 'Abajo', 'Salir'], response)
+    listener = sr.listenfor(['Derecha', 'Izquierda', 'Arriba', 'Abajo', 'Salir'], response)
     while listener.islistening():
         time = clock.tick(60)
         keys = pygame.key.get_pressed()
